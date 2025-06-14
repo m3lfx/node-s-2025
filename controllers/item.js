@@ -19,3 +19,23 @@ exports.getAllItems = (req, res) => {
         console.log(error)
     }
 };
+
+exports.getSingleItem = (req, res, ) => {
+    const sql = 'SELECT * FROM item  WHERE item_id = ?'
+    const values = [parseInt(req.params.id)];
+    try {
+        connection.execute(sql, values, (err, result, fields) => {
+            if (err instanceof Error) {
+                console.log(err);
+                return;
+            }
+
+            return res.status(200).json({
+                success: true,
+                result
+            })
+        });
+    } catch (error) {
+        console.log(error)
+    }
+}
