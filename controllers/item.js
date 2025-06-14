@@ -128,3 +128,22 @@ exports.updateItem = (req, res, next) => {
         success: true,
     });
 }
+
+exports.deleteItem = (req, res, ) => {
+
+    const id = req.params.id
+    const sql = 'DELETE FROM item WHERE item_id = ?';
+    const values = [id];
+
+    connection.execute(sql, values, (err, result) => {
+        if (err) {
+            console.log(err);
+            return res.status(500).json({ error: 'Error deleting item', details: err });
+        }
+    });
+
+    return res.status(201).json({
+        success: true,
+        message: 'item deleted'
+    });
+}
