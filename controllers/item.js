@@ -1,7 +1,5 @@
 const connection = require('../config/database');
 
-
-
 exports.getAllItems = (req, res) => {
     const sql = 'SELECT * FROM item i INNER JOIN stock s ON i.item_id = s.item_id';
     try {
@@ -13,7 +11,7 @@ exports.getAllItems = (req, res) => {
 
             // console.log(rows);
             // console.log(fields);
-            res.status(200).json({
+            return res.status(200).json({
                 rows,
             })
         });
