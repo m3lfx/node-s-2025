@@ -60,4 +60,55 @@ const loginUser =  (req, res) => {
   });
 };
 
-module.exports = { registerUser, loginUser };
+const updateUser = (req, res) => {
+  // {
+  //   "name": "steve",
+  //   "email": "steve@gmail.com",
+  //   "password": "password"
+  // }
+  console.log(req.body, req.file)
+  const { title, fname, lname, addressline, town, zipcode, phone, userId,} = req.body;
+
+  if (req.file) {
+    image = req.file.path.replace(/\\/g, "/");
+  }
+  //     INSERT INTO users(user_id, username, email)
+  //   VALUES(1, 'john_doe', 'john@example.com')
+  // ON DUPLICATE KEY UPDATE email = 'john@example.com';
+  const userSql = `
+  INSERT INTO customer 
+    (title, fname, lname, addressline, town, zipcode, phone, image_path, user_id)
+  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+  ON DUPLICATE KEY UPDATE 
+    title = VALUES(title),
+    fname = VALUES(fname),
+    lname = VALUES(lname),
+    addressline = VALUES(addressline),
+    town = VALUES(town),
+    zipcode = VALUES(zipcode),
+    phone = VALUES(phone),
+    image_path = VALUES(image_path)`;
+    const params = [title, fname, lname, addressline, town, zipcode, phone, image, userId];
+
+  try {
+    connection.execute(userSql, params, (err, result) => {
+      if (err instanceof Error) {
+        console.log(err);
+
+        return res.status(401).json({
+          error: err
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
+        result
+      })
+    });
+  } catch (error) {
+    console.log(error)
+  }
+
+};
+
+module.exports = { registerUser, loginUser, updateUser };
