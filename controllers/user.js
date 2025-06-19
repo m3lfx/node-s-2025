@@ -111,4 +111,30 @@ const updateUser = (req, res) => {
 
 };
 
-module.exports = { registerUser, loginUser, updateUser };
+const deactivateUser = (req, res) => {
+  const { email } = req.body;
+  if (!email) {
+    return res.status(400).json({ error: 'Email is required' });
+  }
+
+  const sql = 'UPDATE users SET deleted_at = ? WHERE email = ?';
+  const timestamp = new Date();
+
+  connection.execute(sql, [timestamp, email], (err, result) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).json({ error: 'Error deactivating user', details: err });
+    }
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    return res.status(200).json({
+      success: true,
+      message: 'User deactivated successfully',
+      email,
+      deleted_at: timestamp
+    });
+  });
+};
+
+module.exports = { registerUser, loginUser, updateUser, deactivateUser };
