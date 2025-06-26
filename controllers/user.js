@@ -102,6 +102,7 @@ const updateUser = (req, res) => {
 
       return res.status(200).json({
         success: true,
+        message: 'profile updated',
         result
       })
     });
