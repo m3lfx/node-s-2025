@@ -17,8 +17,8 @@ exports.isAuthenticatedUser = (req, res, next) => {
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET)
    
-    // req.body.user = {id: decoded.id}
-    console.log(decoded)
+    req.body.user = {id: decoded.id}
+    console.log(req)
 
     next()
 };

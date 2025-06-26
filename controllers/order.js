@@ -3,8 +3,8 @@ const connection = require('../config/database');
 
 exports.createOrder = (req, res, next) => {
     console.log(req.body,)
-    const { cart, userId} = req.body;
-    console.log(cart, userId)
+    const { cart, user} = req.body;
+    console.log(cart, user)
 
     const dateOrdered = new Date();
     const dateShipped = new Date();
@@ -16,9 +16,9 @@ exports.createOrder = (req, res, next) => {
         }
 
         // Get customer_id from userId
-        const sql = 'SELECT customer_id FROM customer WHERE user_id = ?';
-        // const sql = 'SELECT c.customer_id, u.email FROM customer c INNER JOIN users u ON u.id = c.user_id WHERE u.id = ?';
-        connection.execute(sql, [parseInt(userId)], (err, results) => {
+        // const sql = 'SELECT customer_id FROM customer WHERE user_id = ?';
+        const sql = 'SELECT c.customer_id, u.email FROM customer c INNER JOIN users u ON u.id = c.user_id WHERE u.id = ?';
+        connection.execute(sql, [parseInt(user.id)], (err, results) => {
             if (err || results.length === 0) {
                 return connection.rollback(() => {
                     if (!res.headersSent) {
@@ -27,8 +27,8 @@ exports.createOrder = (req, res, next) => {
                 });
             }
 
-            const customer_id = results[0].customer_id;
-            // const { customer_id, email } = results[0]
+            // const customer_id = results[0].customer_id;
+            const { customer_id, email } = results[0]
 
             // Insert into orderinfo
             const orderInfoSql = 'INSERT INTO orderinfo (customer_id, date_placed, date_shipped) VALUES (?, ?, ?)';
