@@ -1,5 +1,6 @@
 const connection = require('../config/database');
 const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
 
 const registerUser = async (req, res) => {
   // {
@@ -31,7 +32,7 @@ const registerUser = async (req, res) => {
 
 };
 
-const loginUser =  (req, res) => {
+const loginUser = (req, res) => {
   const { email, password } = req.body;
   const sql = 'SELECT id, name, email, password FROM users WHERE email = ? AND deleted_at IS NULL';
   connection.execute(sql, [email], async (err, results) => {
@@ -44,7 +45,7 @@ const loginUser =  (req, res) => {
     }
 
     const user = results[0];
-    
+
     const match = await bcrypt.compare(password, user.password);
     if (!match) {
       return res.status(401).json({ success: false, message: 'Invalid email or password' });
@@ -52,10 +53,12 @@ const loginUser =  (req, res) => {
 
     // Remove password from response
     delete user.password;
+    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET,);
 
     return res.status(200).json({
       success: "welcome back",
-      user: results[0]
+      user: results[0],
+      token
     });
   });
 };
@@ -67,7 +70,7 @@ const updateUser = (req, res) => {
   //   "password": "password"
   // }
   console.log(req.body, req.file)
-  const { title, fname, lname, addressline, town, zipcode, phone, userId,} = req.body;
+  const { title, fname, lname, addressline, town, zipcode, phone, userId, } = req.body;
 
   if (req.file) {
     image = req.file.path.replace(/\\/g, "/");
@@ -88,7 +91,7 @@ const updateUser = (req, res) => {
     zipcode = VALUES(zipcode),
     phone = VALUES(phone),
     image_path = VALUES(image_path)`;
-    const params = [title, fname, lname, addressline, town, zipcode, phone, image, userId];
+  const params = [title, fname, lname, addressline, town, zipcode, phone, image, userId];
 
   try {
     connection.execute(userSql, params, (err, result) => {
